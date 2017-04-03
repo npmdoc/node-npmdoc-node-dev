@@ -1,0 +1,204 @@
+<html><head></head><body><div class="apidocDiv">
+<style>
+/*csslint
+*/
+.apidocDiv {
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.apidocDiv a[href] {
+    color: #33f;
+    font-weight: bold;
+    text-decoration: none;
+}
+.apidocDiv a[href]:hover {
+    text-decoration: underline;
+}
+.apidocCodeCommentSpan {
+    background: #bbf;
+    color: #000;
+    display: block;
+}
+.apidocCodeKeywordSpan {
+    color: #d00;
+    font-weight: bold;
+}
+.apidocCodePre {
+    background: #eef;
+    border: 1px solid;
+    color: #777;
+    padding: 5px;
+    white-space: pre-wrap;
+}
+.apidocFooterDiv {
+    margin-top: 20px;
+    text-align: center;
+}
+.apidocModuleLi {
+    margin-top: 10px;
+}
+.apidocSectionDiv {
+    border-top: 1px solid;
+    margin-top: 20px;
+}
+.apidocSignatureSpan {
+    color: #777;
+    font-weight: bold;
+}
+</style>
+<h1>api documentation for
+    <a href="https://github.com/fgnass/node-dev#readme">node-dev (v3.1.3)</a>
+</h1>
+<h4>Restarts your app when files are modified</h4>
+<div class="apidocSectionDiv"><a href="#apidoc.tableOfContents" id="apidoc.tableOfContents"><h1>table of contents</h1></a><ol>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.node-dev">module node-dev</a><ol>
+
+        <li>
+
+            <span class="apidocSignatureSpan">object <span class="apidocSignatureSpan">node-dev.</span>ipc</span>
+
+        </li>
+
+    </ol></li>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.node-dev.ipc">module node-dev.ipc</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.node-dev.ipc.on">
+            function <span class="apidocSignatureSpan">node-dev.ipc.</span>on
+            <span class="apidocSignatureSpan">(proc, type, cb)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.node-dev.ipc.relay">
+            function <span class="apidocSignatureSpan">node-dev.ipc.</span>relay
+            <span class="apidocSignatureSpan">(src, dest)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.node-dev.ipc.send">
+            function <span class="apidocSignatureSpan">node-dev.ipc.</span>send
+            <span class="apidocSignatureSpan">(m, dest)</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
+</ol></div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.node-dev" id="apidoc.module.node-dev">module node-dev</a></h1>
+
+
+
+</div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.node-dev.ipc" id="apidoc.module.node-dev.ipc">module node-dev.ipc</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.node-dev.ipc.on" id="apidoc.element.node-dev.ipc.on">
+        function <span class="apidocSignatureSpan">node-dev.ipc.</span>on
+        <span class="apidocSignatureSpan">(proc, type, cb)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">on = function (proc, type, cb) {
+  function handleMessage(m) {
+    if (isNodeDevMessage(m) &amp;&amp; type in m) cb(m);
+  }
+  proc.on('internalMessage', handleMessage);
+  proc.on('message', handleMessage);
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+if (dest.send) dest.send(m);
+};
+
+exports.on = function (proc, type, cb) {
+function handleMessage(m) {
+  if (isNodeDevMessage(m) &amp;&amp; type in m) cb(m);
+}
+proc.<span class="apidocCodeKeywordSpan">on</span>('internalMessage', handleMessage);
+proc.on('message', handleMessage);
+};
+
+exports.relay = function (src, dest) {
+if (!dest) dest = process;
+function relayMessage(m) {
+  if (isNodeDevMessage(m)) dest.send(m);
+...</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.node-dev.ipc.relay" id="apidoc.element.node-dev.ipc.relay">
+        function <span class="apidocSignatureSpan">node-dev.ipc.</span>relay
+        <span class="apidocSignatureSpan">(src, dest)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">relay = function (src, dest) {
+  if (!dest) dest = process;
+  function relayMessage(m) {
+    if (isNodeDevMessage(m)) dest.send(m);
+  }
+  src.on('internalMessage', relayMessage);
+  src.on('message', relayMessage);
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.node-dev.ipc.send" id="apidoc.element.node-dev.ipc.send">
+        function <span class="apidocSignatureSpan">node-dev.ipc.</span>send
+        <span class="apidocSignatureSpan">(m, dest)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">send = function (m, dest) {
+  m.cmd = 'NODE_DEV';
+  if (!dest) dest = process;
+  if (dest.send) dest.send(m);
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+
+/**
+ * Sends a message to the given process.
+ */
+exports.send = function (m, dest) {
+m.cmd = 'NODE_DEV';
+if (!dest) dest = process;
+if (dest.send) dest.<span class="apidocCodeKeywordSpan">send</span>(m);
+};
+
+exports.on = function (proc, type, cb) {
+function handleMessage(m) {
+  if (isNodeDevMessage(m) &amp;&amp; type in m) cb(m);
+}
+proc.on('internalMessage', handleMessage);
+...</pre></li>
+    </ul>
+
+
+</div>
+
+<div class="apidocFooterDiv">
+    [ this document was created with
+    <a href="https://github.com/kaizhu256/node-utility2" target="_blank">utility2</a>
+    ]
+</div>
+</div>
+</body></html>
