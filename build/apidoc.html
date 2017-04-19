@@ -63,6 +63,15 @@
 
         <li>
 
+            <a class="apidocElementLiA" href="#apidoc.element.node-dev.node-dev">
+            function <span class="apidocSignatureSpan"></span>node-dev
+            <span class="apidocSignatureSpan">(script, scriptArgs, nodeArgs, opts)</span>
+            </a>
+
+        </li>
+
+        <li>
+
             <span class="apidocSignatureSpan">object <span class="apidocSignatureSpan">node-dev.</span>ipc</span>
 
         </li>
@@ -104,6 +113,115 @@
 
 <div class="apidocSectionDiv">
 <h1><a href="#apidoc.module.node-dev" id="apidoc.module.node-dev">module node-dev</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.node-dev.node-dev" id="apidoc.element.node-dev.node-dev">
+        function <span class="apidocSignatureSpan"></span>node-dev
+        <span class="apidocSignatureSpan">(script, scriptArgs, nodeArgs, opts)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">node-dev = function (script, scriptArgs, nodeArgs, opts) {
+  if (typeof script !== &#x27;string&#x27; || script.length === 0) {
+    throw new TypeError(&#x27;`script` must be a string&#x27;);
+  }
+
+  if (!Array.isArray(scriptArgs)) {
+    throw new TypeError(&#x27;`scriptArgs` must be an array&#x27;);
+  }
+
+  if (!Array.isArray(nodeArgs)) {
+    throw new TypeError(&#x27;`nodeArgs` must be an array&#x27;);
+  }
+
+  // The child_process
+  var child;
+
+  var wrapper = resolveMain(__dirname + &#x27;/wrap.js&#x27;);
+  var main = resolveMain(script);
+  var cfg = require(&#x27;./cfg&#x27;)(main, opts);
+  var log = require(&#x27;./log&#x27;)(cfg);
+  var notify = require(&#x27;./notify&#x27;)(cfg, log);
+
+  // Run ./dedupe.js as preload script
+  if (cfg.dedupe) process.env.NODE_DEV_PRELOAD = __dirname + &#x27;/dedupe&#x27;;
+
+  var watcher = filewatcher({ forcePolling: opts.poll });
+
+  watcher.on(&#x27;change&#x27;, function (file) {
+<span class="apidocCodeCommentSpan">    /* eslint-disable no-octal-escape */
+</span>    if (cfg.clear) process.stdout.write(&#x27;\033[2J\033[H&#x27;);
+    notify(&#x27;Restarting&#x27;, file + &#x27; has been modified&#x27;);
+    watcher.removeAll();
+    if (child) {
+      // Child is still running, restart upon exit
+      child.on(&#x27;exit&#x27;, start);
+      stop();
+    } else {
+      // Child is already stopped, probably due to a previous error
+      start();
+    }
+  });
+
+  watcher.on(&#x27;fallback&#x27;, function (limit) {
+    log.warn(&#x27;node-dev ran out of file handles after watching %s files.&#x27;, limit);
+    log.warn(&#x27;Falling back to polling which uses more CPU.&#x27;);
+    log.info(&#x27;Run ulimit -n 10000 to increase the file descriptor limit.&#x27;);
+    if (cfg.deps) log.info(&#x27;... or add `--no-deps` to use less file handles.&#x27;);
+  });
+
+  /**
+   * Run the wrapped script.
+   */
+  function start() {
+    var cmd = nodeArgs.concat(wrapper, script, scriptArgs);
+    child = fork(cmd[0], cmd.slice(1), {
+      cwd: process.cwd(),
+      env: process.env
+    });
+
+    if (cfg.respawn) {
+      child.respawn = true;
+    }
+    child.on(&#x27;exit&#x27;, function (code) {
+      if (!child.respawn) process.exit(code);
+      child = undefined;
+    });
+
+    // Listen for `required` messages and watch the required file.
+    ipc.on(child, &#x27;required&#x27;, function (m) {
+      var isIgnored = cfg.ignore.some(isPrefixOf(m.required));
+
+      if (!isIgnored &#x26;&#x26; (cfg.deps === -1 || getLevel(m.required) &#x3c;= cfg.deps)) {
+        watcher.add(m.required);
+      }
+    });
+
+    // Upon errors, display a notification and tell the child to exit.
+    ipc.on(child, &#x27;error&#x27;, function (m) {
+      notify(m.error, m.message, &#x27;error&#x27;);
+      stop(m.willTerminate);
+    });
+  }
+
+  function stop(willTerminate) {
+    child.respawn = true;
+    child.disconnect();
+    if (!willTerminate) child.kill(&#x27;SIGTERM&#x27;);
+  }
+
+  // Relay SIGTERM
+  process.on(&#x27;SIGTERM&#x27;, function () {
+    if (child) child.kill(&#x27;SIGTERM&#x27;);
+    process.exit(0);
+  });
+
+  start();
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
 
 
 
@@ -163,7 +281,23 @@ function relayMessage(m) {
   src.on(&#x27;internalMessage&#x27;, relayMessage);
   src.on(&#x27;message&#x27;, relayMessage);
 }</pre></li>
-    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+});
+
+if (cfg.fork) {
+// Overwrite child_process.fork() so that we can hook into forked processes
+// too. We also need to relay messages about required files to the parent.
+childProcess.fork = function (modulePath, args, options) {
+  var child = fork(__filename, [modulePath].concat(args), options);
+  ipc.<span class="apidocCodeKeywordSpan">relay</span>(child);
+  return child;
+};
+}
+
+// Error handler that displays a notification and logs the stack to stderr:
+process.on(&#x27;uncaughtException&#x27;, function (err) {
+console.error(err.stack || err);
+...</pre></li>
     </ul>
 
 
