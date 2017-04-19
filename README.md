@@ -1,9 +1,14 @@
-# api documentation for  [node-dev (v3.1.3)](https://github.com/fgnass/node-dev#readme)  [![npm package](https://img.shields.io/npm/v/npmdoc-node-dev.svg?style=flat-square)](https://www.npmjs.org/package/npmdoc-node-dev) [![travis-ci.org build-status](https://api.travis-ci.org/npmdoc/node-npmdoc-node-dev.svg)](https://travis-ci.org/npmdoc/node-npmdoc-node-dev)
+# npmdoc-node-dev
+
+#### api documentation for  [node-dev (v3.1.3)](https://github.com/fgnass/node-dev#readme)  [![npm package](https://img.shields.io/npm/v/npmdoc-node-dev.svg?style=flat-square)](https://www.npmjs.org/package/npmdoc-node-dev) [![travis-ci.org build-status](https://api.travis-ci.org/npmdoc/node-npmdoc-node-dev.svg)](https://travis-ci.org/npmdoc/node-npmdoc-node-dev)
+
 #### Restarts your app when files are modified
 
-[![NPM](https://nodei.co/npm/node-dev.png?downloads=true)](https://www.npmjs.com/package/node-dev)
+[![NPM](https://nodei.co/npm/node-dev.png?downloads=true&downloadRank=true&stars=true)](https://www.npmjs.com/package/node-dev)
 
-[![apidoc](https://npmdoc.github.io/node-npmdoc-node-dev/build/screenCapture.buildNpmdoc.browser._2Fhome_2Ftravis_2Fbuild_2Fnpmdoc_2Fnode-npmdoc-node-dev_2Ftmp_2Fbuild_2Fapidoc.html.png)](https://npmdoc.github.io/node-npmdoc-node-dev/build/apidoc.html)
+- [https://npmdoc.github.io/node-npmdoc-node-dev/build/apidoc.html](https://npmdoc.github.io/node-npmdoc-node-dev/build/apidoc.html)
+
+[![apidoc](https://npmdoc.github.io/node-npmdoc-node-dev/build/screenCapture.buildCi.browser.%252Ftmp%252Fbuild%252Fapidoc.html.png)](https://npmdoc.github.io/node-npmdoc-node-dev/build/apidoc.html)
 
 ![npmPackageListing](https://npmdoc.github.io/node-npmdoc-node-dev/build/screenCapture.npmPackageListing.svg)
 
@@ -28,7 +33,6 @@
     "contributors": [
         {
             "name": "Daniel Gasienica",
-            "email": "daniel@gasienica.ch",
             "url": "https://github.com/gasi/"
         }
     ],
@@ -70,22 +74,18 @@
     "main": "./lib",
     "maintainers": [
         {
-            "name": "fgnass",
-            "email": "fgnass@gmail.com"
+            "name": "fgnass"
         },
         {
-            "name": "gasi",
-            "email": "daniel@gasienica.ch"
+            "name": "gasi"
         },
         {
-            "name": "tomekwi",
-            "email": "t.wiszniewski@gmail.com"
+            "name": "tomekwi"
         }
     ],
     "name": "node-dev",
     "optionalDependencies": {},
     "preferGlobal": true,
-    "readme": "ERROR: No README data found!",
     "repository": {
         "type": "git",
         "url": "git+ssh://git@github.com/fgnass/node-dev.git"
@@ -95,105 +95,6 @@
     },
     "version": "3.1.3"
 }
-```
-
-
-
-# <a name="apidoc.tableOfContents"></a>[table of contents](#apidoc.tableOfContents)
-
-#### [module node-dev](#apidoc.module.node-dev)
-1.  object <span class="apidocSignatureSpan">node-dev.</span>ipc
-
-#### [module node-dev.ipc](#apidoc.module.node-dev.ipc)
-1.  [function <span class="apidocSignatureSpan">node-dev.ipc.</span>on (proc, type, cb)](#apidoc.element.node-dev.ipc.on)
-1.  [function <span class="apidocSignatureSpan">node-dev.ipc.</span>relay (src, dest)](#apidoc.element.node-dev.ipc.relay)
-1.  [function <span class="apidocSignatureSpan">node-dev.ipc.</span>send (m, dest)](#apidoc.element.node-dev.ipc.send)
-
-
-
-# <a name="apidoc.module.node-dev"></a>[module node-dev](#apidoc.module.node-dev)
-
-
-
-# <a name="apidoc.module.node-dev.ipc"></a>[module node-dev.ipc](#apidoc.module.node-dev.ipc)
-
-#### <a name="apidoc.element.node-dev.ipc.on"></a>[function <span class="apidocSignatureSpan">node-dev.ipc.</span>on (proc, type, cb)](#apidoc.element.node-dev.ipc.on)
-- description and source-code
-```javascript
-on = function (proc, type, cb) {
-  function handleMessage(m) {
-    if (isNodeDevMessage(m) && type in m) cb(m);
-  }
-  proc.on('internalMessage', handleMessage);
-  proc.on('message', handleMessage);
-}
-```
-- example usage
-```shell
-...
-if (dest.send) dest.send(m);
-};
-
-exports.on = function (proc, type, cb) {
-function handleMessage(m) {
-  if (isNodeDevMessage(m) && type in m) cb(m);
-}
-proc.on('internalMessage', handleMessage);
-proc.on('message', handleMessage);
-};
-
-exports.relay = function (src, dest) {
-if (!dest) dest = process;
-function relayMessage(m) {
-  if (isNodeDevMessage(m)) dest.send(m);
-...
-```
-
-#### <a name="apidoc.element.node-dev.ipc.relay"></a>[function <span class="apidocSignatureSpan">node-dev.ipc.</span>relay (src, dest)](#apidoc.element.node-dev.ipc.relay)
-- description and source-code
-```javascript
-relay = function (src, dest) {
-  if (!dest) dest = process;
-  function relayMessage(m) {
-    if (isNodeDevMessage(m)) dest.send(m);
-  }
-  src.on('internalMessage', relayMessage);
-  src.on('message', relayMessage);
-}
-```
-- example usage
-```shell
-n/a
-```
-
-#### <a name="apidoc.element.node-dev.ipc.send"></a>[function <span class="apidocSignatureSpan">node-dev.ipc.</span>send (m, dest)](#apidoc.element.node-dev.ipc.send)
-- description and source-code
-```javascript
-send = function (m, dest) {
-  m.cmd = 'NODE_DEV';
-  if (!dest) dest = process;
-  if (dest.send) dest.send(m);
-}
-```
-- example usage
-```shell
-...
-
-/**
- * Sends a message to the given process.
- */
-exports.send = function (m, dest) {
-m.cmd = 'NODE_DEV';
-if (!dest) dest = process;
-if (dest.send) dest.send(m);
-};
-
-exports.on = function (proc, type, cb) {
-function handleMessage(m) {
-  if (isNodeDevMessage(m) && type in m) cb(m);
-}
-proc.on('internalMessage', handleMessage);
-...
 ```
 
 
